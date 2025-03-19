@@ -7,7 +7,6 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -20,7 +19,6 @@ import java.security.SignatureException;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Slf4j
 @Component
 public class JWTFilter extends OncePerRequestFilter {
 
@@ -48,7 +46,6 @@ public class JWTFilter extends OncePerRequestFilter {
             }
             filterChain.doFilter(request, response);
         } catch (ExpiredJwtException | UnsupportedJwtException | MalformedJwtException | SignatureException e) {
-            log.warn(e.getMessage());
             response.setStatus(HttpStatus.FORBIDDEN.value());
         }
     }
