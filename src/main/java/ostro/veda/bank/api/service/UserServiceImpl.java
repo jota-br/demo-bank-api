@@ -3,8 +3,6 @@ package ostro.veda.bank.api.service;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import ostro.veda.bank.api.dto.UserDto;
 import ostro.veda.bank.api.dto.UserAuthDto;

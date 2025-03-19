@@ -21,7 +21,7 @@ public class AccountController {
     }
 
     @PostMapping
-    public ResponseEntity<AccountDto> doTransaction(TransactionDto transactionDto) {
+    public ResponseEntity<AccountDto> doTransaction(@RequestBody TransactionDto transactionDto) {
         return ResponseEntity.ok(accountService.doTransaction(transactionDto));
     }
 }
