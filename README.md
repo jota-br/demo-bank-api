@@ -18,6 +18,9 @@
 `/accounts` user must provider token for authentication obtained in the `/login` endpoint, and a account to `DEPOSIT` or `WITHDRAWAL`.<br/>
 - `WITHDRAWAL` is only available for the account owner.
 - `DEPOSIT` can be made to any valid account.
+<br/>
+
+`/swagger-ui/index.html` to view templates and endpoints.
 
 ## Diagram
 ```mermaid
