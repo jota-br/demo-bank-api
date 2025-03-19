@@ -15,7 +15,7 @@ import java.math.BigDecimal;
 @Accessors(chain = true)
 @NoArgsConstructor
 @EqualsAndHashCode
-@Entity(name = "account")
+@Entity(name = "tb_account")
 public class Account {
 
     @Id
@@ -26,6 +26,7 @@ public class Account {
 
     @Column(precision = 13, scale = 2)
     private BigDecimal balance;
+
     private AccountType accountType;
 
     @Column(precision = 13, scale = 2)
