@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class UserRegisterDto {
+public class UserAuthDto {
 
     private final long id;
     private final String name;

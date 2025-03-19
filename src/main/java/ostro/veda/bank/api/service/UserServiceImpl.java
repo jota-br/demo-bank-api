@@ -1,50 +1,83 @@
 package ostro.veda.bank.api.service;
 
 import jakarta.persistence.EntityExistsException;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import ostro.veda.bank.api.dto.UserDto;
-import ostro.veda.bank.api.dto.UserRegisterDto;
+import ostro.veda.bank.api.dto.UserAuthDto;
+import ostro.veda.bank.api.dto.UserSession;
 import ostro.veda.bank.api.model.Account;
 import ostro.veda.bank.api.model.AccountType;
 import ostro.veda.bank.api.model.User;
 import ostro.veda.bank.api.repository.UserRepository;
+import ostro.veda.bank.api.security.JWTCreator;
+import ostro.veda.bank.api.security.JWTObject;
+import ostro.veda.bank.api.security.PasswordEncoder;
+import ostro.veda.bank.api.security.SecurityConfig;
 
 import java.math.BigDecimal;
-import java.util.MissingFormatArgumentException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.util.Date;
+import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
 @Service
 public class UserServiceImpl implements UserService {
 
+    private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository) {
+    public UserServiceImpl(PasswordEncoder passwordEncoder, UserRepository userRepository) {
+        this.passwordEncoder = passwordEncoder;
         this.userRepository = userRepository;
     }
 
     @Override
-    public UserDto createNewUser(UserRegisterDto userRegisterDto) {
-        boolean userExists = userRepository.existsByName(userRegisterDto.getName());
+    public UserDto createNewUser(UserAuthDto userAuthDto) throws NoSuchAlgorithmException {
+        boolean userExists = userRepository.existsByName(userAuthDto.getName());
         if (userExists) throw new EntityExistsException("User already exists");
 
-        if (userRegisterDto.getName().isBlank()) throw new IllegalStateException("Name field is required");
-        else if (userRegisterDto.getPassword().isBlank()) throw new IllegalStateException("Password field is required");
-        else if (userRegisterDto.getPassword().length() < 8) throw new IllegalStateException("Password field must contain at least 8 characters");
+        if (userAuthDto.getName().isBlank()) throw new IllegalStateException("Name field is required");
+        else if (userAuthDto.getPassword().isBlank()) throw new IllegalStateException("Password field is required");
+        else if (userAuthDto.getPassword().length() < 8) throw new IllegalStateException("Password field must contain at least 8 characters");
 
-        User user = getUser(userRegisterDto);
+        User user = getUser(userAuthDto);
         user = userRepository.save(user);
         return user.toDto();
     }
 
-    private User getUser(UserRegisterDto userRegisterDto) {
-        String encodedPassword = new BCryptPasswordEncoder().encode(userRegisterDto.getPassword());
+    public UserSession login(UserAuthDto userAuthDto) throws InvalidKeyException, NoSuchAlgorithmException {
+        User user = userRepository.findByName(userAuthDto.getName())
+                .orElseThrow(() -> new EntityNotFoundException("User with name %s not found"
+                        .formatted(userAuthDto.getName())));
+        if (passwordEncoder.matches(userAuthDto.getPassword(), user.getPassword(), user.getSalt())) {
+            UserSession userSession = new UserSession();
+            userSession.setUser(user.getName());
+
+            JWTObject jwtObject = new JWTObject();
+            jwtObject.setSubject(user.getName());
+            jwtObject.setIssuedAt(new Date(System.currentTimeMillis()));
+            jwtObject.setExpiration((new Date(System.currentTimeMillis() + SecurityConfig.EXPIRATION)));
+            jwtObject.setRoles(List.of("USERS"));
+            userSession.setToken(JWTCreator.create(SecurityConfig.PREFIX, SecurityConfig.KEY, jwtObject));
+            return userSession;
+        }
+        throw new InvalidKeyException("Password doesn't match");
+    }
+
+    private User getUser(UserAuthDto userAuthDto) throws NoSuchAlgorithmException {
+        String salt = passwordEncoder.getEncodedSalt();
+        String encodedPassword = passwordEncoder.encode(userAuthDto.getPassword(), salt);
         return new User()
-                .setName(userRegisterDto.getName())
+                .setName(userAuthDto.getName())
                 .setPassword(encodedPassword)
+                .setSalt(salt)
                 .setAccounts(getAccounts());
     }
 

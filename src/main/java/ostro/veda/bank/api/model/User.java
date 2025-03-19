@@ -30,6 +30,8 @@ public class User {
     @Size(min = 8)
     private String password;
 
+    private String salt;
+
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Set<Account> accounts = new HashSet<>();
 

@@ -7,10 +7,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import ostro.veda.bank.api.dto.UserDto;
-import ostro.veda.bank.api.dto.UserRegisterDto;
+import ostro.veda.bank.api.dto.UserAuthDto;
 import ostro.veda.bank.api.service.UserServiceImpl;
 
 import java.net.URI;
+import java.security.NoSuchAlgorithmException;
 
 @RestController
 @RequestMapping("/register")
@@ -23,8 +24,8 @@ public class RegisterController {
     }
 
     @PostMapping
-    public ResponseEntity<UserDto> addNewUser(@RequestBody UserRegisterDto userRegisterDto) {
-        UserDto userDto = userService.createNewUser(userRegisterDto);
+    public ResponseEntity<UserDto> addNewUser(@RequestBody UserAuthDto userAuthDto) throws NoSuchAlgorithmException {
+        UserDto userDto = userService.createNewUser(userAuthDto);
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()
                 .path("/users/{id}")
