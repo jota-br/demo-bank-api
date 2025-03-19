@@ -12,6 +12,13 @@
 - Logback (Sl4j) for logging;
 - Deployment with Railway;
 
+## Usage
+`/login` for authentication, retuns JWT toekn `Bearer`.<br/>
+`/register` user creation, retuns user with created accounts `SAVINGS` and `CHECKING` with balance 0.0 and `CHECKING` with `maxLimit` and `availableLimit` of `1000.00`.<br/>
+`/accounts` user must provider token for authentication obtained in the `/login` endpoint, and a account to `DEPOSIT` or `WITHDRAWAL`.<br/>
+- `WITHDRAWAL` is only available for the account owner.
+- `DEPOSIT` can be made to any valid account.
+
 ## Diagram
 ```mermaid
 erDiagram
