@@ -4,7 +4,7 @@ import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ostro.veda.bank.api.dto.AccountDto;
-import ostro.veda.bank.api.dto.AccountTransactionDto;
+import ostro.veda.bank.api.dto.TransactionDto;
 import ostro.veda.bank.api.dto.TransactionType;
 import ostro.veda.bank.api.model.Account;
 import ostro.veda.bank.api.repository.AccountRepository;
@@ -22,47 +22,47 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public AccountDto doTransaction(AccountTransactionDto accountTransactionDto) {
+    public AccountDto doTransaction(TransactionDto transactionDto) {
 
-        Account account = accountRepository.findByAccountNumber(accountTransactionDto.getAccountNumber())
+        Account account = accountRepository.findByAccountNumber(transactionDto.getAccountNumber())
                 .orElseThrow(() ->
                         new EntityNotFoundException("Account with number %s not found"
-                                .formatted(accountTransactionDto.getAccountNumber())));
+                                .formatted(transactionDto.getAccountNumber())));
 
         BigDecimal totalAvailable = account.getBalance().add(account.getAvailableLimit());
 
-        if (accountTransactionDto.getTransactionType().equals(TransactionType.WITHDRAWAL)) {
-            handleWithdrawal(accountTransactionDto, account, totalAvailable);
+        if (transactionDto.getTransactionType().equals(TransactionType.WITHDRAWAL)) {
+            handleWithdrawal(transactionDto, account, totalAvailable);
         } else {
-            handleDeposit(accountTransactionDto, account);
+            handleDeposit(transactionDto, account);
         }
 
         account = accountRepository.save(account);
         return account.toDto();
     }
 
-    private static void handleDeposit(AccountTransactionDto accountTransactionDto, Account account) {
-        BigDecimal remainder = accountTransactionDto.getValue()
+    private static void handleDeposit(TransactionDto transactionDto, Account account) {
+        BigDecimal remainder = transactionDto.getValue()
                 .subtract(account.getMaxLimit().subtract(account.getAvailableLimit()));
 
         account.setAvailableLimit(
                 account.getAvailableLimit()
                         .add(
-                                accountTransactionDto.getValue()
+                                transactionDto.getValue()
                                         .subtract(remainder)
                         ));
         if (remainder.compareTo(new BigDecimal("0.0")) > 0)
             account.setBalance(account.getBalance().add(remainder));
     }
 
-    private static void handleWithdrawal(AccountTransactionDto accountTransactionDto, Account account, BigDecimal totalAvailable) {
-        if (totalAvailable.compareTo(accountTransactionDto.getValue()) >= 0) {
+    private static void handleWithdrawal(TransactionDto transactionDto, Account account, BigDecimal totalAvailable) {
+        if (totalAvailable.compareTo(transactionDto.getValue()) >= 0) {
 
-            BigDecimal remainder = accountTransactionDto.getValue().subtract(account.getBalance());
+            BigDecimal remainder = transactionDto.getValue().subtract(account.getBalance());
             account.setBalance(
                     account.getBalance()
                             .subtract(
-                                    accountTransactionDto.getValue()
+                                    transactionDto.getValue()
                                             .subtract(remainder)
                             ));
             account.setAvailableLimit(

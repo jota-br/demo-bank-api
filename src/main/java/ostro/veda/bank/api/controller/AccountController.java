@@ -1,11 +1,11 @@
-package ostro.veda.bank.api;
+package ostro.veda.bank.api.controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ostro.veda.bank.api.dto.AccountDto;
-import ostro.veda.bank.api.dto.AccountTransactionDto;
+import ostro.veda.bank.api.dto.TransactionDto;
 import ostro.veda.bank.api.service.AccountServiceImpl;
 
 @RestController
@@ -19,7 +19,7 @@ public class AccountController {
     }
 
     @PostMapping
-    public ResponseEntity<AccountDto> doTransaction(AccountTransactionDto accountTransactionDto) {
-        return ResponseEntity.ok(accountService.doTransaction(accountTransactionDto));
+    public ResponseEntity<AccountDto> doTransaction(TransactionDto transactionDto) {
+        return ResponseEntity.ok(accountService.doTransaction(transactionDto));
     }
 }

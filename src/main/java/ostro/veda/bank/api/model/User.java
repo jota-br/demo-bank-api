@@ -40,6 +40,6 @@ public class User {
 
         Set<AccountDto> accountDtoSet = this.getAccounts().stream().map(Account::toDto).collect(Collectors.toSet());
 
-        return new UserDto(this.getId(), this.getName(), this.getPassword(), accountDtoSet);
+        return new UserDto(this.getId(), this.getName(), accountDtoSet);
     }
 }

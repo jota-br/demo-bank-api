@@ -2,14 +2,17 @@ package ostro.veda.bank.api.service;
 
 import jakarta.persistence.EntityExistsException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import ostro.veda.bank.api.dto.UserDto;
+import ostro.veda.bank.api.dto.UserRegisterDto;
 import ostro.veda.bank.api.model.Account;
 import ostro.veda.bank.api.model.AccountType;
 import ostro.veda.bank.api.model.User;
 import ostro.veda.bank.api.repository.UserRepository;
 
 import java.math.BigDecimal;
+import java.util.MissingFormatArgumentException;
 import java.util.Random;
 import java.util.Set;
 
@@ -24,19 +27,24 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDto createNewUser(UserDto userDto) {
-        boolean userExists = userRepository.existsByName(userDto.getName());
+    public UserDto createNewUser(UserRegisterDto userRegisterDto) {
+        boolean userExists = userRepository.existsByName(userRegisterDto.getName());
         if (userExists) throw new EntityExistsException("User already exists");
 
-        User user = getUser(userDto);
+        if (userRegisterDto.getName().isBlank()) throw new IllegalStateException("Name field is required");
+        else if (userRegisterDto.getPassword().isBlank()) throw new IllegalStateException("Password field is required");
+        else if (userRegisterDto.getPassword().length() < 8) throw new IllegalStateException("Password field must contain at least 8 characters");
+
+        User user = getUser(userRegisterDto);
         user = userRepository.save(user);
         return user.toDto();
     }
 
-    private User getUser(UserDto userDto) {
+    private User getUser(UserRegisterDto userRegisterDto) {
+        String encodedPassword = new BCryptPasswordEncoder().encode(userRegisterDto.getPassword());
         return new User()
-                .setName(userDto.getName())
-                .setPassword(userDto.getPassword())
+                .setName(userRegisterDto.getName())
+                .setPassword(encodedPassword)
                 .setAccounts(getAccounts());
     }
 

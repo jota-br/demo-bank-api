@@ -1,4 +1,4 @@
-package ostro.veda.bank.api;
+package ostro.veda.bank.api.controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import ostro.veda.bank.api.dto.UserDto;
+import ostro.veda.bank.api.dto.UserRegisterDto;
 import ostro.veda.bank.api.service.UserServiceImpl;
 
 import java.net.URI;
@@ -22,8 +23,8 @@ public class RegisterController {
     }
 
     @PostMapping
-    public ResponseEntity<UserDto> addNewUser(@RequestBody UserDto userDto) {
-        userDto = userService.createNewUser(userDto);
+    public ResponseEntity<UserDto> addNewUser(@RequestBody UserRegisterDto userRegisterDto) {
+        UserDto userDto = userService.createNewUser(userRegisterDto);
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()
                 .path("/users/{id}")
