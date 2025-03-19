@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 import ostro.veda.bank.api.dto.AccountDto;
 import ostro.veda.bank.api.dto.TransactionDto;
@@ -16,7 +15,6 @@ import ostro.veda.bank.api.repository.AccountRepository;
 import ostro.veda.bank.api.repository.UserRepository;
 
 import java.math.BigDecimal;
-import java.util.Set;
 
 @Service
 public class AccountServiceImpl implements AccountService {
@@ -44,7 +42,7 @@ public class AccountServiceImpl implements AccountService {
 
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             String name = authentication.getName();
-            User user = userRepository.findByName(name)
+            User user = userRepository.findByUsername(name)
                     .orElseThrow(() -> new EntityNotFoundException("User not %s not found".formatted(name)));
 
             if (user.getAccounts()

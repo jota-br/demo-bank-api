@@ -9,6 +9,8 @@ import java.security.NoSuchAlgorithmException;
 
 public interface UserService {
 
+    UserDto getUserInformation(String username);
+
     UserDto createNewUser(UserAuthDto userAuthDto) throws NoSuchAlgorithmException;
 
     UserSession login(UserAuthDto userAuthDto) throws InvalidKeyException, NoSuchAlgorithmException;

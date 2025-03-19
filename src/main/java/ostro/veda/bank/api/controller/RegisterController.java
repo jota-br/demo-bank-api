@@ -1,5 +1,6 @@
 package ostro.veda.bank.api.controller;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -15,6 +16,7 @@ import java.security.NoSuchAlgorithmException;
 
 @RestController
 @RequestMapping("/register")
+@Tag(name = "Register Controller")
 public class RegisterController {
 
     private final UserServiceImpl userService;

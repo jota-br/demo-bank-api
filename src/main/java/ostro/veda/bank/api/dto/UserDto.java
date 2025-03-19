@@ -10,6 +10,6 @@ import java.util.Set;
 public class UserDto {
 
     private final long id;
-    private final String name;
+    private final String username;
     private final Set<AccountDto> accounts;
 }

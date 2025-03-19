@@ -25,7 +25,7 @@ public class User {
     private long id;
 
     @Column(unique = true)
-    private String name;
+    private String username;
 
     @Size(min = 8)
     private String password;
@@ -42,6 +42,6 @@ public class User {
 
         Set<AccountDto> accountDtoSet = this.getAccounts().stream().map(Account::toDto).collect(Collectors.toSet());
 
-        return new UserDto(this.getId(), this.getName(), accountDtoSet);
+        return new UserDto(this.getId(), this.getUsername(), accountDtoSet);
     }
 }

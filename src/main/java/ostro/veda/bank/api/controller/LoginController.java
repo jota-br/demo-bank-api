@@ -1,6 +1,6 @@
 package ostro.veda.bank.api.controller;
 
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -15,6 +15,7 @@ import java.security.NoSuchAlgorithmException;
 
 @RestController
 @RequestMapping("/login")
+@Tag(name = "Login Controller")
 public class LoginController {
 
     private final UserServiceImpl userService;

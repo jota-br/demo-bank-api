@@ -37,8 +37,15 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public UserDto getUserInformation(String username) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new EntityNotFoundException("User with username %s not found".formatted(username)));
+        return user.toDto();
+    }
+
+    @Override
     public UserDto createNewUser(UserAuthDto userAuthDto) throws NoSuchAlgorithmException {
-        boolean userExists = userRepository.existsByName(userAuthDto.getName());
+        boolean userExists = userRepository.existsByUsername(userAuthDto.getName());
         if (userExists) throw new EntityExistsException("User already exists");
 
         if (userAuthDto.getName().isBlank()) throw new IllegalStateException("Name field is required");
@@ -51,15 +58,15 @@ public class UserServiceImpl implements UserService {
     }
 
     public UserSession login(UserAuthDto userAuthDto) throws InvalidKeyException, NoSuchAlgorithmException {
-        User user = userRepository.findByName(userAuthDto.getName())
-                .orElseThrow(() -> new EntityNotFoundException("User with name %s not found"
+        User user = userRepository.findByUsername(userAuthDto.getName())
+                .orElseThrow(() -> new EntityNotFoundException("User with username %s not found"
                         .formatted(userAuthDto.getName())));
         if (passwordEncoder.matches(userAuthDto.getPassword(), user.getPassword(), user.getSalt())) {
             UserSession userSession = new UserSession();
-            userSession.setUser(user.getName());
+            userSession.setUser(user.getUsername());
 
             JWTObject jwtObject = new JWTObject();
-            jwtObject.setSubject(user.getName());
+            jwtObject.setSubject(user.getUsername());
             jwtObject.setIssuedAt(new Date(System.currentTimeMillis()));
             jwtObject.setExpiration((new Date(System.currentTimeMillis() + SecurityConfig.EXPIRATION)));
             jwtObject.setRoles(List.of("USERS"));
@@ -73,7 +80,7 @@ public class UserServiceImpl implements UserService {
         String salt = passwordEncoder.getEncodedSalt();
         String encodedPassword = passwordEncoder.encode(userAuthDto.getPassword(), salt);
         return new User()
-                .setName(userAuthDto.getName())
+                .setUsername(userAuthDto.getName())
                 .setPassword(encodedPassword)
                 .setSalt(salt)
                 .setAccounts(getAccounts());

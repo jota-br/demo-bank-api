@@ -1,4 +1,4 @@
-package ostro.veda.bank.api.security;
+package ostro.veda.bank.api.config;
 
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;

@@ -1,6 +1,6 @@
 package ostro.veda.bank.api.controller;
 
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -12,6 +12,7 @@ import ostro.veda.bank.api.service.AccountServiceImpl;
 
 @RestController
 @RequestMapping("/accounts")
+@Tag(name = "Accounts Controller")
 public class AccountController {
 
     private final AccountServiceImpl accountService;
